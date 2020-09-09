@@ -1,6 +1,6 @@
 #!groovy
 def call(String type,Map map) {
-    if (type == "maven") {
+    if (type == "gradle") {
         pipeline {
             agent any
             //参数化变量,目前只支持[booleanParam, choice, credentials, file, text, password, run, string]这几种参数类型，其他高级参数化类型还需等待社区支持
