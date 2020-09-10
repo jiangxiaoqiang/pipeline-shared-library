@@ -1,38 +1,31 @@
 #!groovy
-def call(String type,Map map) {
+
+def call(String type, Map map) {
     if (type == "gradle") {
         pipeline {
             agent any
             parameters {
-                //固定设置三类pipeline场景
-                choice(name: 'scene', choices: "scene1:完整流水线\nscene2:代码检查\nscene3:测试部署", description: '场景选择，默认运行完整流水线，如果只做开发自测可选择代码检查，如果只做环境部署可选择测试部署')
-                //repoBranch参数后续替换成git parameter不再依赖手工输入,JENKINS-46451
+                choice(name: 'env', choices: "dabai-fat\ndabai-uat\ndabai-pro", description: 'fat:测试部署\nuat:演示环境部署\npro:生产环境部署')
                 string(name: 'repoBranch', defaultValue: "${map.repoBranch}", description: 'git分支名称')
                 string(name: 'repoUrl', defaultValue: "${map.repoUrl}", description: 'repoUrl')
                 string(name: 'appName', defaultValue: "${map.appName}", description: 'appName')
                 string(name: 'k8sSvcName', defaultValue: "${map.k8sSvcName}", description: 'Kubernetes Service Name')
-                string(name: 'env', defaultValue: "${map.env}", description: 'env')
                 string(name: 'tag', defaultValue: "${map.tag}", description: 'tag')
+                string(name: 'k8sResourceType', defaultValue: "${map.k8sResourceType}", description: 'Kubernetes资源类型')
             }
             tools {
-                maven "${map.maven}"
-                jdk "${map.jdk}"
+                gradle "${type}"
             }
             environment {
+                GRADLE_HOME = "${tool 'Gradle'}"
+                PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
-                //git服务全系统只读账号，无需修改
-                CRED_ID = "${map.CRED_ID}"
-                //pom.xml的相对路径
-                POM_PATH = "${map.POM_PATH}"
-
-                fatImageRegistryAddr="registry.cn-hangzhou.aliyuncs.com/dabai_app_k8s"
-                proImageRegistryAddr=""
+                registryAddr = getRegistryAddr("${env == null}" ? "dabai-fat" : "${env}")
             }
 
             options {
                 disableConcurrentBuilds()
                 timeout(time: 1, unit: 'HOURS')
-                //保持构建的最大个数
                 buildDisarder(logRotator(numToKeepStr: '10'))
             }
             stages {
@@ -45,30 +38,62 @@ def call(String type,Map map) {
                 }
 
                 stage('build') {
-                    steps{
+                    steps {
                         sh "./gradlew :${map.appName}:${map.appName}-service:build -x test"
                     }
                 }
 
                 stage('package-image') {
-                    steps{
-                        sh "docker build -f ./Dockerfile -t=\"${map.env}/${map.appName}-service:v1.0.0\" ."
+                    steps {
+                        sh "docker build -f ./Dockerfile -t=\"${env}/${map.appName}-service:v1.0.0\" ."
                     }
                 }
 
                 stage('push-image') {
-                    steps{
-                        sh "docker tag ${map.env}/{map.appName}:${map.tag} ${fatImageRegistryAddr}/${map.env}/${map.appName}:${map.tag}"
-                        sh "docker push ${fatImageRegistryAddr}/${map.env}/${map.appName}:${map.tag}"
+                    steps {
+                        sh "docker tag ${env}/{map.appName}:${map.tag} ${registryAddr}/${env}/${map.appName}:${map.tag}"
+                        sh "docker push ${registryAddr}/${env}/${map.appName}:${map.tag}"
                     }
                 }
 
-                stage('rolling-update') {
-                    steps{
-                        sh "kubectl rollout restart statefulset ${k8sSvcName} -n ${map.env}"
+                stage('rolling-update-fat') {
+                    when {
+                        expression {
+                            "${env}" == 'dabai-fat'
+                        }
+                    }
+                    steps {
+                        sh "kubectl rollout restart ${k8sResourceType} ${k8sSvcName} -n ${env}"
+                    }
+                }
+
+                stage('rolling-update-pro') {
+                    when {
+                        expression {
+                            "${env}" == 'dabai-pro'
+                        }
+                    }
+                    steps {
+                        sh "b=\" sha256:\""
+                        sh "c=\" size:\""
+                        sh "start_index=\$(awk -v a=\"$a\" -v b=\"$b\" 'BEGIN{print index(a,b)}')"
+                        sh "end_index=\$(awk -v a=\"$a\" -v b=\"$c\" 'BEGIN{print index(a,b)}')"
+                        sh "digest=${a:start_index:end_index-start_index}"
+                        sh "/Users/dabaidabai/.jenkins/workspace/build_shell/update_harbor_image-statefulset.sh ${k8sResourceType} ${harbor} ${digest} ${env}\n"
                     }
                 }
             }
         }
+    }
+}
+
+
+def getRegistryAddr(env) {
+    if ("dabai-pro".equals(env)) {
+        return "int";
+    } else if ("dabai-fat".equals(env)) {
+        return "registry.cn-hangzhou.aliyuncs.com/dabai_app_k8s";
+    } else {
+        return "registry.cn-hangzhou.aliyuncs.com/dabai_app_k8s";
     }
 }
