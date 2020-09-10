@@ -19,7 +19,7 @@ def call(String type, Map map) {
                 GRADLE_HOME = "${tool 'Gradle'}"
                 PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
-                registryAddr = getRegistryAddr("${env == null}" ? "dabai-fat" : "${env}")
+                registryAddr = getRegistryAddr("${params.env == null}" ? "dabai-fat" : "${params.env}")
                 k8sResourceType = getKubernetesResourceType("${map.k8sResourceType}")
             }
 
@@ -46,26 +46,26 @@ def call(String type, Map map) {
 
                 stage('push-image') {
                     steps {
-                        sh "docker tag ${env}/{map.appName}:${map.tag} ${registryAddr}/${env}/${map.appName}:${map.tag}"
-                        sh "docker push ${registryAddr}/${env}/${map.appName}:${map.tag}"
+                        sh "docker tag ${params.env}/{map.appName}:${map.tag} ${registryAddr}/${params.env}/${map.appName}:${map.tag}"
+                        sh "docker push ${registryAddr}/${params.env}/${map.appName}:${map.tag}"
                     }
                 }
 
                 stage('rolling-update-fat') {
                     when {
                         expression {
-                            "${env}" == 'dabai-fat'
+                            "${params.env}" == 'dabai-fat'
                         }
                     }
                     steps {
-                        sh "kubectl rollout restart ${k8sResourceType} ${k8sSvcName} -n ${env}"
+                        sh "kubectl rollout restart ${k8sResourceType} ${k8sSvcName} -n ${params.env}"
                     }
                 }
 
                 stage('rolling-update-pro') {
                     when {
                         expression {
-                            "${env}" == 'dabai-pro'
+                            "${params.env}" == 'dabai-pro'
                         }
                     }
                     steps {
@@ -74,7 +74,7 @@ def call(String type, Map map) {
                         sh "start_index=\$(awk -v a=\"$a\" -v b=\"$b\" 'BEGIN{print index(a,b)}')"
                         sh "end_index=\$(awk -v a=\"$a\" -v b=\"$c\" 'BEGIN{print index(a,b)}')"
                         sh "digest=${a:start_index:end_index-start_index}"
-                        sh "/Users/dabaidabai/.jenkins/workspace/build_shell/update_harbor_image-statefulset.sh ${k8sResourceType} ${harbor} ${digest} ${env}\n"
+                        sh "/Users/dabaidabai/.jenkins/workspace/build_shell/update_harbor_image-statefulset.sh ${k8sResourceType} ${harbor} ${digest} ${params.env}\n"
                     }
                 }
             }
