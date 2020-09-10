@@ -40,7 +40,7 @@ def call(String type, Map map) {
 
                 stage('package-image') {
                     steps {
-                        sh "docker build -f ./Dockerfile -t=\"${env}/${map.appName}-service:v1.0.0\" ."
+                        sh "docker build -f ./Dockerfile -t=\"${params.env}/${map.appName}-service:v1.0.0\" ."
                     }
                 }
 
