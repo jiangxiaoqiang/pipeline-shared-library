@@ -13,7 +13,7 @@ def call(String type, Map map) {
                 string(name: 'tag', defaultValue: "${map.tag}", description: 'tag')
             }
             tools {
-                gradle "${type}"
+                gradle "Gradle"
             }
             environment {
                 GRADLE_HOME = "${tool 'Gradle'}"
