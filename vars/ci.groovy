@@ -46,7 +46,7 @@ def call(String type, Map map) {
 
                 stage('push-image') {
                     steps {
-                        sh "docker tag ${params.env}/{map.appName}:${map.tag} ${registryAddr}/${params.env}/${map.appName}:${map.tag}"
+                        sh "docker tag ${params.env}/${map.appName}:${map.tag} ${registryAddr}/${params.env}/${map.appName}:${map.tag}"
                         sh "docker push ${registryAddr}/${params.env}/${map.appName}:${map.tag}"
                     }
                 }
