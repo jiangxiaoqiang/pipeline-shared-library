@@ -22,12 +22,7 @@ def call(String type, Map map) {
                 registryAddr = getRegistryAddr("${env == null}" ? "dabai-fat" : "${env}")
                 k8sResourceType = getKubernetesResourceType("${map.k8sResourceType}")
             }
-
-            options {
-                disableConcurrentBuilds()
-                timeout(time: 1, unit: 'HOURS')
-                buildDisarder(logRotator(numToKeepStr: '10'))
-            }
+            
             stages {
                 stage('checkout-source') {
                     steps {
