@@ -11,7 +11,6 @@ def call(String type, Map map) {
                 string(name: 'appName', defaultValue: "${map.appName}", description: 'appName')
                 string(name: 'k8sSvcName', defaultValue: "${map.k8sSvcName}", description: 'Kubernetes Service Name')
                 string(name: 'tag', defaultValue: "${map.tag}", description: 'tag')
-                string(name: 'k8sResourceType', defaultValue: "${map.k8sResourceType}", description: 'Kubernetes资源类型')
             }
             tools {
                 gradle "${type}"
@@ -21,6 +20,7 @@ def call(String type, Map map) {
                 PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
                 registryAddr = getRegistryAddr("${env == null}" ? "dabai-fat" : "${env}")
+                k8sResourceType = getKubernetesResourceType("${map.k8sResourceType}")
             }
 
             options {
@@ -96,4 +96,13 @@ def getRegistryAddr(env) {
     } else {
         return "registry.cn-hangzhou.aliyuncs.com/dabai_app_k8s";
     }
+}
+
+/**
+ * 获取Kubernetes资源类型
+ * @param value
+ * @return
+ */
+def getKubernetesResourceType(value){
+    return value == null ? "Deployment" : value
 }
