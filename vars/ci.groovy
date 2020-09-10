@@ -13,6 +13,7 @@ def call(String type,Map map) {
                 string(name: 'k8sSvcName', defaultValue: "${map.k8sSvcName}", description: 'Kubernetes Service Name')
                 string(name: 'env', defaultValue: "${map.env}", description: 'env')
                 string(name: 'tag', defaultValue: "${map.tag}", description: 'tag')
+                string(name: 'k8sResourceType', defaultValue: "${map.k8sResourceType}", description: 'Kubernetes Resource Type')
             }
             tools {
                 maven "${map.maven}"
@@ -65,7 +66,7 @@ def call(String type,Map map) {
 
                 stage('rolling-update') {
                     steps{
-                        sh "kubectl rollout restart statefulset ${k8sSvcName} -n ${map.env}"
+                        sh "kubectl rollout restart ${k8sResourceType} ${k8sSvcName} -n ${map.env}"
                     }
                 }
             }
