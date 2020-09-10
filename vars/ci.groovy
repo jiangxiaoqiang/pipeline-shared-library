@@ -22,7 +22,7 @@ def call(String type, Map map) {
                 registryAddr = getRegistryAddr("${env == null}" ? "dabai-fat" : "${env}")
                 k8sResourceType = getKubernetesResourceType("${map.k8sResourceType}")
             }
-            
+
             stages {
                 stage('checkout-source') {
                     steps {
