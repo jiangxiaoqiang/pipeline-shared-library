@@ -43,11 +43,9 @@ def call(String type,Map map) {
                 //保持构建的最大个数
                 buildDiscarder(logRotator(numToKeepStr: '10'))
             }
-            //pipeline的各个阶段场景
             stages {
                 stage('代码获取') {
                     steps {
-                        //一些初始化操作
                         script {
                             //根据param.server分割获取参数
                             def split = params.server.split(",")
