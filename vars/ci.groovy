@@ -5,12 +5,12 @@ def call(String type, Map map) {
         pipeline {
             agent any
             parameters {
-                choice(name: 'env', choices: "dabai-fat\ndabai-uat\ndabai-pro", description: 'fat:测试部署\nuat:演示环境部署\npro:生产环境部署')
+                choice(name: 'env', choices: "dabai-fat\ndabai-uat\ndabai-pro", description: 'fat:测试环境部署\nuat:演示环境部署\npro:生产环境部署')
                 string(name: 'repoBranch', defaultValue: "${map.repoBranch}", description: 'git分支名称')
-                string(name: 'repoUrl', defaultValue: "${map.repoUrl}", description: 'repoUrl')
-                string(name: 'appName', defaultValue: "${map.appName}", description: 'appName')
-                string(name: 'k8sSvcName', defaultValue: "${map.k8sSvcName}", description: 'Kubernetes Service Name')
-                string(name: 'tag', defaultValue: "${map.tag}", description: 'tag')
+                string(name: 'repoUrl', defaultValue: "${map.repoUrl}", description: '项目仓库的地址')
+                string(name: 'appName', defaultValue: "${map.appName}", description: '应用的名称，打包Docker镜像时以此命名')
+                string(name: 'k8sSvcName', defaultValue: "${map.k8sSvcName}", description: 'Kubernetes服务的名称，不要超过24个字符（实际使用时根据Kubernetes服务名称的规定）')
+                string(name: 'tag', defaultValue: "${map.tag}", description: '版本标签，镜像标签')
             }
             tools {
                 gradle "Gradle"
@@ -34,7 +34,7 @@ def call(String type, Map map) {
 
                 stage('build') {
                     steps {
-                        sh "./gradlew :${map.appName}:${map.appName}-service:build -x test"
+                        sh "./gradlew :${map.appName}:${map.appName}-service:build"
                     }
                 }
 
@@ -73,7 +73,7 @@ def call(String type, Map map) {
                         sh "c=\" size:\""
                         sh "start_index=\$(awk -v a=\"$a\" -v b=\"$b\" 'BEGIN{print index(a,b)}')"
                         sh "end_index=\$(awk -v a=\"$a\" -v b=\"$c\" 'BEGIN{print index(a,b)}')"
-                        sh "digest=${a:start_index:end_index-start_index}"
+                        sh "digest=${a:start_index:end_index - start_index}"
                         sh "/Users/dabaidabai/.jenkins/workspace/build_shell/update_harbor_image-statefulset.sh ${k8sResourceType} ${harbor} ${digest} ${params.env}\n"
                     }
                 }
@@ -98,6 +98,6 @@ def getRegistryAddr(env) {
  * @param value
  * @return
  */
-def getKubernetesResourceType(value){
+def getKubernetesResourceType(value) {
     return value == null ? "Deployment" : value
 }
