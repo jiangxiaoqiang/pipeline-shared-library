@@ -12,6 +12,7 @@ def call(String type, Map map) {
                 string(name: 'k8sSvcName', defaultValue: "${map.k8sSvcName}", description: 'Kubernetes服务的名称，不要超过24个字符（实际使用时根据Kubernetes服务名称的规定）')
                 string(name: 'tag', defaultValue: "${map.tag}", description: '版本标签，镜像标签')
                 string(name: 'k8sResourceType', defaultValue: "${map.k8sResourceType}", description: 'Kubernetes资源类型，如Deployment、StatefulSet等等')
+                string(name: 'runUnitTest', defaultValue: "${map.runUnitTest}", description: '是否运行单元测试')
             }
             tools {
                 gradle "Gradle"
@@ -30,6 +31,17 @@ def call(String type, Map map) {
                         git branch: "${map.repoBranch}",
                                 credentialsId: '3808ec5a-b476-4471-8c47-db66ed4d0eb0',
                                 url: "${repoUrl}"
+                    }
+                }
+
+                stage('unit-test') {
+                    when {
+                        expression {
+                            "${params.runUnitTest}" == '1'
+                        }
+                    }
+                    steps {
+                        sh "./gradlew test"
                     }
                 }
 
