@@ -21,7 +21,7 @@ def call(String type, Map map) {
                 GRADLE_HOME = "${tool 'Gradle'}"
                 PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
-                registryAddr = getRegistryAddr("${params.env == null}" ? "dabai-fat" : "${params.env}")
+                registryAddr = getRegistryAddr("${params.env == null}" ? "dabai-fat" : "${params.env}",map)
                 k8sResourceType = getKubernetesResourceType("${map.k8sResourceType}")
             }
 
@@ -96,13 +96,13 @@ def call(String type, Map map) {
 }
 
 
-def getRegistryAddr(env) {
+def getRegistryAddr(env,Map map) {
     if ("dabai-pro".equals(env)) {
-        return "int";
+        return "${map.proRegistryAddr}";
     } else if ("dabai-fat".equals(env)) {
-        return "registry.cn-hangzhou.aliyuncs.com/dabai_app_k8s";
-    } else {
-        return "registry.cn-hangzhou.aliyuncs.com/dabai_app_k8s";
+        return "${map.fatRegistryAddr}";
+    } else if("dabai-uat".equals(env)){
+        return "${map.uatRegistryAddr}";
     }
 }
 
