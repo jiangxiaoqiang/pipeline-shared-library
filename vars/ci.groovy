@@ -5,7 +5,7 @@ def call(String type, Map map) {
         pipeline {
             agent any
             parameters {
-                choice(name: 'env', choices: "dabai-fat\ndabai-uat\ndabai-pro", description: 'fat:测试环境部署\nuat:演示环境部署\npro:生产环境部署')
+                choice(name: 'env', choices: "fat\nuat\npro", description: 'fat:测试环境部署\nuat:演示环境部署\npro:生产环境部署')
                 string(name: 'repoBranch', defaultValue: "${map.repoBranch}", description: 'git分支名称')
                 string(name: 'repoUrl', defaultValue: "${map.repoUrl}", description: '项目仓库的地址')
                 string(name: 'appName', defaultValue: "${map.appName}", description: '应用的名称，打包Docker镜像时以此命名')
@@ -21,7 +21,7 @@ def call(String type, Map map) {
                 GRADLE_HOME = "${tool 'Gradle'}"
                 PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
-                registryAddr = getRegistryAddr("${params.env == null}" ? "dabai-fat" : "${params.env}",map)
+                registryAddr = getRegistryAddr("${params.env == null}" ? "fat" : "${params.env}",map)
                 k8sResourceType = getKubernetesResourceType("${map.k8sResourceType}")
             }
 
@@ -67,7 +67,7 @@ def call(String type, Map map) {
                 stage('rolling-update-fat') {
                     when {
                         expression {
-                            "${params.env}" == 'dabai-fat'
+                            "${params.env}" == 'fat'
                         }
                     }
                     steps {
@@ -78,7 +78,7 @@ def call(String type, Map map) {
                 stage('rolling-update-pro') {
                     when {
                         expression {
-                            "${params.env}" == 'dabai-pro'
+                            "${params.env}" == 'pro'
                         }
                     }
                     steps {
@@ -97,11 +97,11 @@ def call(String type, Map map) {
 
 
 def getRegistryAddr(env,Map map) {
-    if ("dabai-pro".equals(env)) {
+    if ("pro".equals(env)) {
         return "${map.proRegistryAddr}";
-    } else if ("dabai-fat".equals(env)) {
+    } else if ("fat".equals(env)) {
         return "${map.fatRegistryAddr}";
-    } else if("dabai-uat".equals(env)){
+    } else if("uat".equals(env)){
         return "${map.uatRegistryAddr}";
     }
 }
