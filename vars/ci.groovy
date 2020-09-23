@@ -29,7 +29,7 @@ def call(String type, Map map) {
                 stage('checkout-source') {
                     steps {
                         git branch: "${map.repoBranch}",
-                                credentialsId: '3808ec5a-b476-4471-8c47-db66ed4d0eb0',
+                                credentialsId: "${map.credentialsId}",
                                 url: "${repoUrl}"
                     }
                 }
@@ -95,7 +95,13 @@ def call(String type, Map map) {
     }
 }
 
-
+/**
+ * 获取不同部署环境的容器推送地址
+ *
+ * @param env
+ * @param map
+ * @return
+ */
 def getRegistryAddr(env,Map map) {
     if ("pro".equals(env)) {
         return "${map.proRegistryAddr}";
