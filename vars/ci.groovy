@@ -47,7 +47,7 @@ def call(String type, Map map) {
 
                 stage('build') {
                     steps {
-                        sh "./gradlew :${map.appName}:${map.appName}-service:build"
+                        sh "./gradlew :${map.appName}:${map.appName}-service:build -x test"
                     }
                 }
 
