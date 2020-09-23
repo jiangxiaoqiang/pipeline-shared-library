@@ -13,6 +13,7 @@ def call(String type, Map map) {
                 string(name: 'tag', defaultValue: "${map.tag}", description: '版本标签，镜像标签')
                 string(name: 'k8sResourceType', defaultValue: "${map.k8sResourceType}", description: 'Kubernetes资源类型，如Deployment、StatefulSet等等')
                 string(name: 'runUnitTest', defaultValue: "${map.runUnitTest}", description: '是否运行单元测试')
+                string(name: 'k8sNamespace', defaultValue: "${map.k8sNamespace}", description: 'Kubernetes命名空间')
             }
             tools {
                 gradle "Gradle"
@@ -59,8 +60,8 @@ def call(String type, Map map) {
 
                 stage('push-image') {
                     steps {
-                        sh "docker tag ${params.env}/${map.appName}:${map.tag} ${registryAddr}/${params.env}/${map.appName}:${map.tag}"
-                        sh "docker push ${registryAddr}/${params.env}/${map.appName}:${map.tag}"
+                        sh "docker tag ${params.k8sNamespace}/${map.appName}:${map.tag} ${registryAddr}/${params.k8sNamespace}/${map.appName}:${map.tag}"
+                        sh "docker push ${registryAddr}/${params.k8sNamespace}/${map.appName}:${map.tag}"
                     }
                 }
 
@@ -71,7 +72,7 @@ def call(String type, Map map) {
                         }
                     }
                     steps {
-                        sh "kubectl rollout restart ${k8sResourceType} ${k8sSvcName} -n ${params.env}"
+                        sh "kubectl rollout restart ${k8sResourceType} ${k8sSvcName} -n ${params.k8sNamespace}"
                     }
                 }
 
