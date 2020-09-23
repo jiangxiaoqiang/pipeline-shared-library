@@ -3,7 +3,9 @@
 def call(String type, Map map) {
     if (type == "gradle") {
         pipeline {
-            agent(map.agent==null ? "any" : map.agent)
+            agent {
+                map.agent==null ? "any" : map.agent
+            }
             parameters {
                 choice(name: 'env', choices: "fat\nuat\npro", description: 'fat:测试环境部署\nuat:演示环境部署\npro:生产环境部署')
                 string(name: 'repoBranch', defaultValue: "${map.repoBranch}", description: 'git分支名称')
@@ -120,3 +122,5 @@ def getRegistryAddr(env,Map map) {
 def getKubernetesResourceType(value) {
     return value == null ? "Deployment" : value
 }
+
+
