@@ -14,6 +14,7 @@ def call(String type, Map map) {
                 string(name: 'k8sResourceType', defaultValue: "${map.k8sResourceType}", description: 'Kubernetes资源类型，如Deployment、StatefulSet等等')
                 string(name: 'runUnitTest', defaultValue: "${map.runUnitTest}", description: '是否运行单元测试')
                 string(name: 'k8sNamespace', defaultValue: "${map.k8sNamespace}", description: 'Kubernetes命名空间')
+                string(name: 'credentialsId', defaultValue: "${map.credentialsId}", description: 'Jenkins认证凭据ID')
             }
             tools {
                 gradle "Gradle"
@@ -29,9 +30,9 @@ def call(String type, Map map) {
             stages {
                 stage('checkout-source') {
                     steps {
-                        git branch: "${map.repoBranch}",
-                                credentialsId: "${map.credentialsId}",
-                                url: "${repoUrl}"
+                        git branch: "${params.repoBranch}",
+                                credentialsId: "${params.credentialsId}",
+                                url: "${params.repoUrl}"
                     }
                 }
 
