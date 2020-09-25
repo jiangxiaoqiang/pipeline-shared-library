@@ -24,7 +24,7 @@ def call(String type, Map map) {
                 PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
                 registryAddr = getRegistryAddr("${params.env == null}" ? "fat" : "${params.env}",map)
-                k8sResourceType = getKubernetesResourceType("${map.k8sResourceType}")
+                k8sResourceType = getKubernetesResourceType("${params.k8sResourceType}")
             }
 
             stages {
@@ -49,20 +49,20 @@ def call(String type, Map map) {
 
                 stage('build') {
                     steps {
-                        sh "./gradlew :${map.appName}:${map.appName}-service:build -x test"
+                        sh "./gradlew :${params.appName}:${params.appName}-service:build -x test"
                     }
                 }
 
                 stage('package-image') {
                     steps {
-                        sh "docker build -f ./Dockerfile -t=\"${params.k8sNamespace}/${map.appName}:v1.0.0\" ."
+                        sh "docker build -f ./Dockerfile -t=\"${params.k8sNamespace}/${params.appName}:v1.0.0\" ."
                     }
                 }
 
                 stage('push-image') {
                     steps {
-                        sh "docker tag ${params.k8sNamespace}/${map.appName}:${map.tag} ${registryAddr}/${params.k8sNamespace}/${map.appName}:${map.tag}"
-                        sh "docker push ${registryAddr}/${params.k8sNamespace}/${map.appName}:${map.tag}"
+                        sh "docker tag ${params.k8sNamespace}/${params.appName}:${params.tag} ${registryAddr}/${params.k8sNamespace}/${params.appName}:${params.tag}"
+                        sh "docker push ${registryAddr}/${params.k8sNamespace}/${params.appName}:${params.tag}"
                     }
                 }
 
