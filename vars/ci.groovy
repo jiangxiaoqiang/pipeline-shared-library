@@ -14,7 +14,9 @@ def call(String type, Map map) {
                 string(name: 'k8sResourceType', defaultValue: "${map.k8sResourceType}", description: 'Kubernetes资源类型，如Deployment、StatefulSet等等')
                 string(name: 'runUnitTest', defaultValue: "${map.runUnitTest}", description: '是否运行单元测试')
                 string(name: 'k8sNamespace', defaultValue: "${map.k8sNamespace}", description: 'Kubernetes命名空间')
-                string(name: 'credentialsId', defaultValue: "${map.credentialsId}", description: 'Jenkins认证凭据ID')
+                string(name: 'credentialsId', defaultValue: "${map.credentialsId}", description: 'Jenkins认证凭据ID，用于获取原始码')
+                string(name: 'multibrachComposeName', defaultValue: "${map.multibrachComposeName}", description: '' +
+                        '多分支构建时，分支组合名称，例如项目的名字是dolphin，有一个hotfix分支，在多分支构建时，传入Jenkins自动生成的名称dolphin_hotfix')
             }
             tools {
                 gradle "Gradle"
@@ -49,7 +51,7 @@ def call(String type, Map map) {
 
                 stage('build') {
                     steps {
-                        sh "./gradlew :${params.appName}:${params.appName}-service:build -x test"
+                        sh "./gradlew :${params.multibrachComposeName==null?params.appName:params.multibrachComposeName}:${params.appName}-service:build -x test"
                     }
                 }
 
