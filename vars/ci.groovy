@@ -25,6 +25,7 @@ def call(String type, Map map) {
                 GRADLE_HOME = "${tool 'Gradle'}"
                 PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
+                print("wgewgewt" + "${params.env}")
                 registryAddr = getRegistryAddr("${params.env == null}" ? "fat" : "${params.env}",map)
                 k8sResourceType = getKubernetesResourceType("${params.k8sResourceType}")
             }
