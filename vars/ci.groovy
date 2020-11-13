@@ -107,6 +107,7 @@ def call(String type, Map map) {
  * @return
  */
 def getRegistryAddr(env,Map map) {
+    print("env:"+env)
     if ("pro".equals(env)) {
         return "${map.proRegistryAddr}";
     } else if ("fat".equals(env)) {
