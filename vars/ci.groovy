@@ -116,6 +116,7 @@ def getRegistryAddr(env,Map map) {
     if ("pro".equals(env)) {
         return "${map.proRegistryAddr}"
     } else if ("fat".equals(env)) {
+        print("${map.fatRegistryAddr}")
         return "${map.fatRegistryAddr}"
     } else if("uat".equals(env)){
         return "${map.uatRegistryAddr}"
