@@ -19,6 +19,7 @@ def call(String type, Map map) {
                 string(name: 'runUnitTest', defaultValue: "${map.runUnitTest}", description: '是否运行单元测试')
                 string(name: 'k8sNamespace', defaultValue: "${map.k8sNamespace}", description: 'Kubernetes命名空间')
                 string(name: 'credentialsId', defaultValue: "${map.credentialsId}", description: 'Jenkins认证凭据ID，用于获取原始码')
+                string(name: 'fatRegistryAddr', defaultValue: "${map.fatRegistryAddr}", description: 'FAT环境注册地址')
                 string(name: 'multibrachComposeName', defaultValue: "${map.multibrachComposeName}", description: '' +
                         '多分支构建时，分支组合名称，例如项目的名字是dolphin，有一个hotfix分支，在多分支构建时，传入Jenkins自动生成的名称dolphin_hotfix')
             }
@@ -113,11 +114,11 @@ def call(String type, Map map) {
 def getRegistryAddr(env,Map map) {
     print("choice:" + env)
     if ("pro".equals(env)) {
-        return "${map.proRegistryAddr}";
+        return "${map.proRegistryAddr}"
     } else if ("fat".equals(env)) {
-        return "${map.fatRegistryAddr}";
+        return "${map.fatRegistryAddr}"
     } else if("uat".equals(env)){
-        return "${map.uatRegistryAddr}";
+        return "${map.uatRegistryAddr}"
     }
 }
 
