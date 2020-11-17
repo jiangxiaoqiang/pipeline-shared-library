@@ -6,9 +6,9 @@ def call(String type, Map map) {
             agent any
             parameters {
                 choice(
-                    name: 'env',
-                    choices: ['fat', 'uat', 'pro'],
-                    description: 'fat:测试环境部署\nuat:演示环境部署\npro:生产环境部署'
+                        name: 'env',
+                        choices: ['fat', 'uat', 'pro'],
+                        description: 'fat:测试环境部署\nuat:演示环境部署\npro:生产环境部署'
                 )
                 string(name: 'repoBranch', defaultValue: "${map.repoBranch}", description: 'git分支名称')
                 string(name: 'repoUrl', defaultValue: "${map.repoUrl}", description: '项目仓库的地址')
@@ -30,7 +30,7 @@ def call(String type, Map map) {
                 GRADLE_HOME = "${tool 'Gradle'}"
                 PATH = "${env.GRADLE_HOME}/bin:${env.PATH}"
                 repoUrl = "${map.repoUrl}"
-                registryAddr = getRegistryAddr("${params.env}" == null ? "fat" : "${params.env}",map)
+                registryAddr = getRegistryAddr("${params.env}" == null ? "fat" : "${params.env}", map)
                 k8sResourceType = getKubernetesResourceType("${params.k8sResourceType}")
             }
 
@@ -56,7 +56,7 @@ def call(String type, Map map) {
 
                 stage('build') {
                     steps {
-                        sh "./gradlew :${params.multibrachComposeName==null?params.appName:params.multibrachComposeName}:${params.appName}-service:build -x test"
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test"
                     }
                 }
 
@@ -111,16 +111,16 @@ def call(String type, Map map) {
  * @param map
  * @return
  */
-def getRegistryAddr(env,Map map) {
+def getRegistryAddr(env, Map map) {
     print("choice:" + env)
-    if ("pro".equals(env)) {
+    if ("pro" == env) {
         return "${map.proRegistryAddr}"
     }
-    if ("fat".equals(env)) {
-        print("fataddress:"+"${map.fatRegistryAddr}")
+    if ("fat" == env) {
+        print("fataddress:" + "${map.fatRegistryAddr}")
         return "${map.fatRegistryAddr}"
     }
-    if("uat".equals(env)){
+    if ("uat" == env) {
         return "${map.uatRegistryAddr}"
     }
 }
