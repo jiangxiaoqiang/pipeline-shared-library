@@ -57,7 +57,7 @@ def call(String type, Map map) {
 
                 stage('build-api') {
                     steps {
-                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test -PpubRepoUrl=${params.pubRepoUrl} -PmultibranchProjDir=${params.multibrachComposeName}"
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-api:build publishMavenPublicationToMavenRepository -x test -PpubRepoUrl=${params.pubRepoUrl} -PmultibranchProjDir=${params.multibrachComposeName}"
                     }
                 }
 
