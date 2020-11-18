@@ -22,6 +22,7 @@ def call(String type, Map map) {
                 string(name: 'fatRegistryAddr', defaultValue: "${map.fatRegistryAddr}", description: 'FAT环境注册地址')
                 string(name: 'multibrachComposeName', defaultValue: "${map.multibrachComposeName}", description: '' +
                         '多分支构建时，分支组合名称，例如项目的名字是dolphin，有一个hotfix分支，在多分支构建时，传入Jenkins自动生成的名称dolphin_hotfix')
+                string(name: 'pubRepoUrl', defaultValue: "${map.pubRepoUrl}", description: 'Jar包发布的仓库地址')
             }
             tools {
                 gradle "Gradle"
@@ -54,9 +55,15 @@ def call(String type, Map map) {
                     }
                 }
 
+                stage('build-api') {
+                    steps {
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test -PpubRepoUrl=${params.pubRepoUrl} -PmultibranchProjDir=${params.multibrachComposeName}"
+                    }
+                }
+
                 stage('build') {
                     steps {
-                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test"
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test -PpubRepoUrl=${params.pubRepoUrl} -PmultibranchProjDir=${params.multibrachComposeName}"
                     }
                 }
 
