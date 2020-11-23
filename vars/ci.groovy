@@ -23,6 +23,7 @@ def call(String type, Map map) {
                 string(name: 'multibrachComposeName', defaultValue: "${map.multibrachComposeName}", description: '' +
                         '多分支构建时，分支组合名称，例如项目的名字是dolphin，有一个hotfix分支，在多分支构建时，传入Jenkins自动生成的名称dolphin_hotfix')
                 string(name: 'pubRepoUrl', defaultValue: "${map.pubRepoUrl}", description: 'Jar包发布的仓库地址')
+                string(name: 'gradleConfigFileName', defaultValue: "${map.gradleConfigFileName}", description: '构建gradle的配置文件名称，有时构建的配置与开发时的配置不同，构建时使用单独的配置文件')
             }
             tools {
                 gradle "Gradle"
@@ -57,13 +58,13 @@ def call(String type, Map map) {
 
                 stage('build-api') {
                     steps {
-                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-api:build publishMavenPublicationToMavenRepository -x test"
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-api:build publishMavenPublicationToMavenRepository -x test --build-file=${params.gradleConfigFileName}"
                     }
                 }
 
                 stage('build') {
                     steps {
-                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test"
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test --build-file=${params.gradleConfigFileName}"
                     }
                 }
 
