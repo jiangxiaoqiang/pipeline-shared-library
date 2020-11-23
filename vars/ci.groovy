@@ -58,13 +58,13 @@ def call(String type, Map map) {
 
                 stage('build-api') {
                     steps {
-                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-api:build publishMavenPublicationToMavenRepository -x test --build-file=${params.gradleConfigFileName}"
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-api:build publishMavenPublicationToMavenRepository -x test --build-file=${params.gradleConfigFileName} --settings-file=../settings.gradle"
                     }
                 }
 
                 stage('build') {
                     steps {
-                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test --build-file=${params.gradleConfigFileName}"
+                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-service:build -x test --build-file=${params.gradleConfigFileName} --settings-file=../settings.gradle"
                     }
                 }
 
