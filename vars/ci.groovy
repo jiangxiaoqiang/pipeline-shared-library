@@ -24,6 +24,7 @@ def call(String type, Map map) {
                         '多分支构建时，分支组合名称，例如项目的名字是dolphin，有一个hotfix分支，在多分支构建时，传入Jenkins自动生成的名称dolphin_hotfix')
                 string(name: 'pubRepoUrl', defaultValue: "${map.pubRepoUrl}", description: 'Jar包发布的仓库地址')
                 string(name: 'gradleConfigFileName', defaultValue: "${map.gradleConfigFileName}", description: '构建gradle的配置文件名称，有时构建的配置与开发时的配置不同，构建时使用单独的配置文件')
+                string(name: 'buildJar', defaultValue: "${map.buildJar}", description: '构建目标Jar包名称')
             }
             tools {
                 gradle "Gradle"
@@ -70,7 +71,7 @@ def call(String type, Map map) {
 
                 stage('package-image') {
                     steps {
-                        sh "docker build -f ./Dockerfile -t=\"${params.k8sNamespace}/${params.appName}:v1.0.0\" ."
+                        sh "docker build -f ./Dockerfile --build-arg buildJar=\"${params.buildJar}\" -t=\"${params.k8sNamespace}/${params.appName}:v1.0.0\" ."
                     }
                 }
 
