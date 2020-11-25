@@ -57,10 +57,14 @@ def call(String type, Map map) {
                     }
                 }
 
-                stage('build-api') {
-                    steps {
-                        sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-api:build publishMavenPublicationToMavenRepository -x test"
+                try {
+                    stage('build-api') {
+                        steps {
+                            sh "./gradlew :${params.multibrachComposeName == null ? params.appName : params.multibrachComposeName}:${params.appName}-api:build publishMavenPublicationToMavenRepository -x test"
+                        }
                     }
+                }catch(Exception e){
+                    echo "Publish jar failed, but will be continue"
                 }
 
                 stage('build') {
