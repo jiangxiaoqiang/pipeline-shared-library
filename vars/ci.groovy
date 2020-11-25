@@ -106,12 +106,7 @@ def call(String type, Map map) {
                         }
                     }
                     steps {
-                        sh "b=\" sha256:\""
-                        sh "c=\" size:\""
-                        sh "start_index=\$(awk -v a=\"$a\" -v b=\"$b\" 'BEGIN{print index(a,b)}')"
-                        sh "end_index=\$(awk -v a=\"$a\" -v b=\"$c\" 'BEGIN{print index(a,b)}')"
-                        sh "digest=${a:start_index:end_index - start_index}"
-                        sh "/Users/dabaidabai/.jenkins/workspace/build_shell/update_harbor_image-statefulset.sh ${k8sResourceType} ${harbor} ${digest} ${params.env}\n"
+                        sh "./script/docker-deploy-harbor.sh ${params.k8sNamespace}"
                     }
                 }
             }
