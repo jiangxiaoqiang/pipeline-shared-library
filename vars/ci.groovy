@@ -81,9 +81,19 @@ def call(String type, Map map) {
                     }
                 }
 
-                stage('push-image') {
+                stage('tag-image') {
                     steps {
                         sh "docker tag ${params.k8sNamespace}/${params.appName}:${params.tag} ${registryAddr}/${params.k8sNamespace}/${params.appName}:${params.tag}"
+                    }
+                }
+
+                stage('push-image') {
+                    when {
+                        expression {
+                            "${params.env}" != 'pro'
+                        }
+                    }
+                    steps {
                         sh "docker push ${registryAddr}/${params.k8sNamespace}/${params.appName}:${params.tag}"
                     }
                 }
