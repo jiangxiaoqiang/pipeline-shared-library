@@ -106,7 +106,7 @@ def call(String type, Map map) {
                         }
                     }
                     steps {
-                        sh "./script/docker-deploy-harbor.sh ${params.k8sNamespace}"
+                        sh "./script/update-production-pod.sh ${params.tag} ${k8sSvcName} ${params.k8sNamespace}"
                     }
                 }
             }
