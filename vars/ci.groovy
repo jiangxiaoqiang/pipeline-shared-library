@@ -116,7 +116,7 @@ def call(String type, Map map) {
                         }
                     }
                     steps {
-                        sh "./script/update-production-pod.sh ${params.tag} ${k8sSvcName} ${params.k8sNamespace} ${params.appName}"
+                        sh "/Users/dabaidabai/.jenkins/workspace/build_shell/update-production-pod.sh ${params.tag} ${k8sSvcName} ${params.k8sNamespace} ${params.appName}"
                     }
                 }
             }
