@@ -77,7 +77,7 @@ def call(String type, Map map) {
 
                 stage('package-image') {
                     steps {
-                        sh "docker build -f ./Dockerfile --build-arg buildJar=\"${params.buildJar}\" -t=\"${params.k8sNamespace}/${params.appName}:v1.0.0\" ."
+                        sh "docker build -f ./Dockerfile --build-arg buildJar=\"${params.buildJar}\" -t=\"${params.k8sNamespace}/${params.appName}:${params.tag}\" ."
                     }
                 }
 
