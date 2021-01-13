@@ -4,9 +4,9 @@ def call(String type, Map map) {
     if (type == "gradle") {
         pipeline {
             agent any
-            triggers {
-                parameterizedCron(env.BRANCH_NAME != 'master' ? '''H/1 * * * * % ABC=XYZ''' : '')
-            }
+            //triggers {
+            //    parameterizedCron(env.BRANCH_NAME != 'master' ? '''H/1 * * * * % ABC=XYZ''' : '')
+            //}
             parameters {
                 choice(
                         name: 'env',
