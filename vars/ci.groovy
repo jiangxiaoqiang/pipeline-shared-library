@@ -26,7 +26,6 @@ def call(String type, Map map) {
                 string(name: 'multibrachComposeName', defaultValue: "${map.multibrachComposeName}", description: '' +
                         '多分支构建时，分支组合名称，例如项目的名字是dolphin，有一个hotfix分支，在多分支构建时，传入Jenkins自动生成的名称dolphin_hotfix')
                 string(name: 'pubRepoUrl', defaultValue: "${map.pubRepoUrl}", description: 'Jar包发布的仓库地址')
-                string(name: 'gradleConfigFileName', defaultValue: "${map.gradleConfigFileName}", description: '构建gradle的配置文件名称，有时构建的配置与开发时的配置不同，构建时使用单独的配置文件')
                 string(name: 'buildJar', defaultValue: "${map.buildJar}", description: '构建目标Jar包名称')
             }
             tools {
@@ -105,6 +104,17 @@ def call(String type, Map map) {
                     when {
                         expression {
                             "${params.env}" == 'fat'
+                        }
+                    }
+                    steps {
+                        sh "kubectl rollout restart ${k8sResourceType} ${k8sSvcName} -n ${params.k8sNamespace}"
+                    }
+                }
+
+                stage('rolling-update-uat') {
+                    when {
+                        expression {
+                            "${params.env}" == 'uat'
                         }
                     }
                     steps {
