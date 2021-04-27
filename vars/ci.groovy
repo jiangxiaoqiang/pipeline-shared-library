@@ -79,13 +79,13 @@ def call(String type, Map map) {
 
                 stage('package-image') {
                     steps {
-                        sh "docker build -f ./Dockerfile --build-arg buildJar=\"${params.buildJar}\" -t=\"${params.k8sNamespace}/${params.appName}:${params.tag}\" ."
+                        sh "docker build -f ./Dockerfile --build-arg buildJar=\"${params.buildJar}\" -t=\"${params.appName}:${params.tag}\" ."
                     }
                 }
 
                 stage('tag-image') {
                     steps {
-                        sh "docker tag ${params.k8sNamespace}/${params.appName}:${params.tag} ${registryAddr}/${params.k8sNamespace}/${params.appName}:${params.tag}"
+                        sh "docker tag ${params.appName}:${params.tag} ${registryAddr}/${params.appName}:${params.tag}"
                     }
                 }
 
@@ -96,7 +96,7 @@ def call(String type, Map map) {
                         }
                     }
                     steps {
-                        sh "docker push ${registryAddr}/${params.k8sNamespace}/${params.appName}:${params.tag}"
+                        sh "docker push ${registryAddr}/${params.appName}:${params.tag}"
                     }
                 }
 
