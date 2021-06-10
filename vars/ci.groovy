@@ -90,11 +90,6 @@ def call(String type, Map map) {
                 }
 
                 stage('push-image') {
-                    when {
-                        expression {
-                            "${params.env}" != 'pro'
-                        }
-                    }
                     steps {
                         sh "docker push ${registryAddr}/${params.appName}:${params.tag}"
                     }
