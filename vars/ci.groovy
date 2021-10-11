@@ -77,6 +77,12 @@ def call(String type, Map map) {
                     }
                 }
 
+                stage('prune-image'){
+                    steps{
+                        sh "docker system prune"
+                    }
+                }
+
                 stage('package-image') {
                     steps {
                         sh "docker build -f ./Dockerfile --build-arg buildJar=\"${params.buildJar}\" -t=\"${params.appName}:${params.tag}\" ."
